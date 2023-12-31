@@ -35,28 +35,52 @@ class Game
     puts ''
   end
 
-  def rules
+  def print_fig
     @fig.each do |arr|
-      arr.each do |idx|
-        @matrix[idx][idx][@flag] = '██'
-      end
+      @matrix[arr[0]][arr[1]][@flag] = '██'
     end
   end
 
-  # def insert_cells
-  #   (0...@width).each do |i|
-  #     (0...@height).each do |j|
-  #       @matrix[j][i][@flag] = '██'
-  #     end
-  #   end
-  # end
+  def rules(matrix, jdx, idx, neighbours)
+
+    if jdx + 1 < matrix.length && idx + 1 < matrix.length
+      neighbours += 1 if matrix[jdx + 1][idx][@flag] == '██'
+      neighbours += 1 if matrix[jdx + 1][idx - 1][@flag] == '██'
+      neighbours += 1 if matrix[jdx + 1][idx + 1][@flag] == '██'
+    end
+
+    if idx + 1 < matrix.length
+      neighbours += 1 if matrix[jdx][idx - 1][@flag] == '██'
+
+      neighbours += 1 if matrix[jdx][idx + 1][@flag] == '██'
+
+      neighbours += 1 if matrix[jdx - 1][idx][@flag] == '██'
+
+      neighbours += 1 if matrix[jdx - 1][idx - 1][@flag] == '██'
+
+      neighbours += 1 if matrix[jdx - 1][idx + 1][@flag] == '██'
+    end
+      neighbours
+  end
+
+  def total_neighbours
+    neighbours = 0
+
+    (0...@width).each do |i|
+      (0...@height).each do |j|
+        puts rules(@matrix, j, i, neighbours) # unless @matrix[j][i][@flag] == nil?
+      end
+      puts ''
+    end
+  end
 end
 
 a = [
+  [4, 1],
   [2, 2],
-  [2, 3],
-  [2, 4],
-  [2, 5]
+  [3, 2],
+  [4, 2],
+  [3, 4]
 ]
 
 g = Game.new(7, 7, a)
@@ -64,5 +88,6 @@ g = Game.new(7, 7, a)
 
 g.display
 # g.insert_cells
-g.rules
+g.print_fig
 g.display
+g.total_neighbours

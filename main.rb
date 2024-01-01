@@ -25,16 +25,6 @@ class Game
     matrix
   end
 
-  def display
-    @matrix.each do |i|
-      i.each do |j|
-        print j[@flag]
-      end
-      print "\n"
-    end
-    puts ''
-  end
-
   def print_fig
     @fig.each do |arr|
       @matrix[arr[0]][arr[1]][@flag] = '██'
@@ -63,15 +53,35 @@ class Game
       neighbours
   end
 
+  def cell_alive
+    cell = total_neighbours
+    puts cell
+  end
+
   def total_neighbours
     neighbours = 0
 
     (0...@width).each do |i|
       (0...@height).each do |j|
-        puts rules(@matrix, j, i, neighbours) # unless @matrix[j][i][@flag] == nil?
+        if rules(@matrix, j, i, neighbours) == 2 || rules(@matrix, j, i, neighbours) == 3 && @matrix[j][i][@flag] == '██'
+          @matrix[j][i][@flag] = '██'
+        elsif rules(@matrix, j, i, neighbours) == 3 && @matrix[j][i][@flag] == '░░'
+          @matrix[j][i][@flag] = '██'
+        elsif rules(@matrix, j, i, neighbours) > 3 && @matrix[j][i][@flag] == '██'
+          @matrix[j][i][@flag] = '░░'
+        end
       end
-      puts ''
     end
+  end
+
+  def display
+    @matrix.each do |i|
+      i.each do |j|
+        print j[@flag]
+      end
+      print "\n"
+    end
+    puts ''
   end
 end
 
@@ -85,9 +95,25 @@ a = [
 
 g = Game.new(7, 7, a)
 # g.display
-
-g.display
 # g.insert_cells
 g.print_fig
+
 g.display
+
 g.total_neighbours
+g.display
+
+g.total_neighbours
+g.display
+
+g.total_neighbours
+g.display
+
+g.total_neighbours
+g.display
+
+g.total_neighbours
+g.display
+
+g.total_neighbours
+g.display

@@ -53,67 +53,83 @@ class Game
       neighbours
   end
 
-  def cell_alive
-    cell = total_neighbours
-    puts cell
-  end
-
   def total_neighbours
     neighbours = 0
+    new_matrix = start_matrix(@height, @width)
 
     (0...@width).each do |i|
       (0...@height).each do |j|
-        if rules(@matrix, j, i, neighbours) == 2 || rules(@matrix, j, i, neighbours) == 3 && @matrix[j][i][@flag] == '██'
-          @matrix[j][i][@flag] = '██'
-        elsif rules(@matrix, j, i, neighbours) == 3 && @matrix[j][i][@flag] == '░░'
-          @matrix[j][i][@flag] = '██'
-        elsif rules(@matrix, j, i, neighbours) > 3 && @matrix[j][i][@flag] == '██'
-          @matrix[j][i][@flag] = '░░'
+        counted_nghbrs = rules(@matrix, j, i, neighbours)
+        if (counted_nghbrs == 2 || counted_nghbrs == 3) && @matrix[j][i][@flag] == '██'
+          new_matrix[j][i][@flag] = '██'
+        elsif counted_nghbrs == 3 && @matrix[j][i][@flag] == '░░'
+          new_matrix[j][i][@flag] = '██'
+        elsif (counted_nghbrs > 3 || counted_nghbrs < 2) && @matrix[j][i][@flag] == '██'
+          new_matrix[j][i][@flag] = '░░'
         end
       end
     end
+    @matrix = new_matrix
+  end
+
+  # def total_neighbours
+  #   neighbours = 0
+  #   new_matrix = start_matrix(@height, @width)
+
+  #   (0...@width).each do |i|
+  #     (0...@height).each do |j|
+  #       counted_nghbrs = rules(@matrix, j, i, neighbours)
+  #       change_cell(new_matrix, counted_nghbrs, j, i)
+
+  #       if @matrix[j][i][@flag] == '░░' && counted_nghbrs == 3
+  #           new_matrix[j][i][@flag] = '██'
+  #       end
+  #    end
+  #   end
+  #   @matrix = new_matrix
+  # end
+
+  # def change_cell(new_matrix, counted_nghbrs, jdx, idx)
+
+  #   condition = counted_nghbrs > 3 || counted_nghbrs < 2
+  #   condition2 = counted_nghbrs == 3 || counted_nghbrs == 2
+
+  #   new_matrix[jdx][idx][@flag] = '██' if @matrix[jdx][idx][@flag] == '██' && (condition)
+  #   new_matrix[jdx][idx][@flag] = '░░' if @matrix[jdx][idx][@flag] == '██' && (condition2)
+  # end
+
+  def wait_sleep
+    sleep(1)
+    total_neighbours
   end
 
   def display
-    @matrix.each do |i|
-      i.each do |j|
-        print j[@flag]
+    loop do
+      @matrix.each do |i|
+        i.each do |j|
+          print j[@flag]
+        end
+        print "\n"
       end
-      print "\n"
+      puts ''
+      wait_sleep
     end
-    puts ''
   end
 end
 
 a = [
-  [4, 1],
-  [2, 2],
-  [3, 2],
-  [4, 2],
-  [3, 4]
+  [5, 4],
+  [5, 3],
+  [3, 3],
+  [3, 4],
+  [4, 3],
+  [4, 5],
+  [3, 5],
+  [4, 5],
+  [5, 5]
 ]
 
-g = Game.new(7, 7, a)
-# g.display
-# g.insert_cells
+g = Game.new(10, 10, a)
 g.print_fig
 
-g.display
-
-g.total_neighbours
-g.display
-
-g.total_neighbours
-g.display
-
-g.total_neighbours
-g.display
-
-g.total_neighbours
-g.display
-
-g.total_neighbours
-g.display
-
-g.total_neighbours
 g.display

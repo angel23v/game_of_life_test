@@ -31,72 +31,64 @@ class Game
     end
   end
 
-  def rules(matrix, jdx, idx, neighbours)
-
+  def first_range(matrix, jdx, idx, neighbours, positions)
     if jdx + 1 < matrix.length && idx + 1 < matrix.length
-      neighbours += 1 if matrix[jdx + 1][idx][@flag] == '██'
-      neighbours += 1 if matrix[jdx + 1][idx - 1][@flag] == '██'
-      neighbours += 1 if matrix[jdx + 1][idx + 1][@flag] == '██'
+
+      positions.each do |pos|
+        neighbours += 1 if matrix[jdx + 1][pos][@flag] == '██'
+      end
     end
+    neighbours
+  end
+
+  def rules(matrix, jdx, idx, neighbours)
+    positions = [idx, idx + 1, idx - 1]
+
+    neighbours += first_range(matrix, jdx, idx, neighbours, positions)
 
     if idx + 1 < matrix.length
+      positions.each do |pos|
+        neighbours += 1 if matrix[jdx - 1][pos][@flag] == '██'
+      end
       neighbours += 1 if matrix[jdx][idx - 1][@flag] == '██'
-
       neighbours += 1 if matrix[jdx][idx + 1][@flag] == '██'
-
-      neighbours += 1 if matrix[jdx - 1][idx][@flag] == '██'
-
-      neighbours += 1 if matrix[jdx - 1][idx - 1][@flag] == '██'
-
-      neighbours += 1 if matrix[jdx - 1][idx + 1][@flag] == '██'
     end
-      neighbours
+    neighbours
   end
 
   def total_neighbours
     neighbours = 0
     new_matrix = start_matrix(@height, @width)
+    @matrix = change_cell(neighbours, new_matrix)
+  end
 
+  def cell_alive(counted_nghbrs, jdx, idx, new_matrix, try_alive)
+    if try_alive && counted_nghbrs == 2 || counted_nghbrs == 3
+      new_matrix = new_matrix[jdx][idx][@flag] = '██'
+    else
+      new_matrix[jdx][idx][@flag] = '░░'
+    end
+    new_matrix
+  end
+
+  def cell_dead(new_matrix, counted_nghbrs, jdx, idx)
+    new_matrix[jdx][idx][@flag] = '██' if counted_nghbrs == 3 && @matrix[jdx][idx][@flag] == '░░'
+  end
+
+  def change_cell(neighbours, new_matrix)
     (0...@width).each do |i|
       (0...@height).each do |j|
         counted_nghbrs = rules(@matrix, j, i, neighbours)
-        if (counted_nghbrs == 2 || counted_nghbrs == 3) && @matrix[j][i][@flag] == '██'
-          new_matrix[j][i][@flag] = '██'
-        elsif counted_nghbrs == 3 && @matrix[j][i][@flag] == '░░'
-          new_matrix[j][i][@flag] = '██'
-        elsif (counted_nghbrs > 3 || counted_nghbrs < 2) && @matrix[j][i][@flag] == '██'
-          new_matrix[j][i][@flag] = '░░'
-        end
+
+        try_alive = @matrix[j][i][@flag] == '██'
+
+        cell_alive(counted_nghbrs, j, i, new_matrix, try_alive)
+
+        cell_dead(new_matrix, counted_nghbrs, j, i)
       end
     end
-    @matrix = new_matrix
+    new_matrix
   end
-
-  # def total_neighbours
-  #   neighbours = 0
-  #   new_matrix = start_matrix(@height, @width)
-
-  #   (0...@width).each do |i|
-  #     (0...@height).each do |j|
-  #       counted_nghbrs = rules(@matrix, j, i, neighbours)
-  #       change_cell(new_matrix, counted_nghbrs, j, i)
-
-  #       if @matrix[j][i][@flag] == '░░' && counted_nghbrs == 3
-  #           new_matrix[j][i][@flag] = '██'
-  #       end
-  #    end
-  #   end
-  #   @matrix = new_matrix
-  # end
-
-  # def change_cell(new_matrix, counted_nghbrs, jdx, idx)
-
-  #   condition = counted_nghbrs > 3 || counted_nghbrs < 2
-  #   condition2 = counted_nghbrs == 3 || counted_nghbrs == 2
-
-  #   new_matrix[jdx][idx][@flag] = '██' if @matrix[jdx][idx][@flag] == '██' && (condition)
-  #   new_matrix[jdx][idx][@flag] = '░░' if @matrix[jdx][idx][@flag] == '██' && (condition2)
-  # end
 
   def wait_sleep
     sleep(1)
